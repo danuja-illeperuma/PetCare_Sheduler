@@ -3,7 +3,6 @@
  */
 package com.mycompany.petcare_sheduler;
 
-
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -31,7 +30,12 @@ public class PetCare_Sheduler {
             System.out.println("2.Schedule appointments");
             System.out.println("3.Store data");
             System.out.println("4.Display records");
-            System.out.println("5.Generate Reports");
+            System.out.println("5.Upcoming_appoinments");
+            System.out.println("6.Past_appoinments");
+            System.out.println("7.today_appoinments");
+            System.out.println("8.change_appoinments_status");
+            System.out.println("9.Search pet details");
+            System.out.println("10.exit");
             System.out.println("Enter choice: ");
 
             String choice = sc.nextLine();
@@ -43,26 +47,47 @@ public class PetCare_Sheduler {
                 case "2":
                     SheduleAppoinments();
                     break;
-                    
+
                 case "3":
                     PetsToFile();
                     break;
-                    
+
                 case "4":
-                    DisplayData();
+                    DisplayPets();
                     break;
-                    
+
+                case "5":
+                    Upcomingappoinments();
+                    break;
+
+                case "6":
+                    pastappoinments();
+                    break;
+
+                case "7":
+                    todayappoinments();
+                    break;
+
+                case "8":
+                    ChangeAppoinment_Status();
+                    break;
+
+                case "9":
+                    searchpet();
+                    break;
+
+                case "10":
+                    System.out.println("Good bye...");
+                    PetsToFile();
+                    return;
+
+                default:
+                    System.out.println("Invalid input");
 
             }
 
         }
 
-    }
-    private static void DisplayData(){
-        System.out.println(pets.size());
-        for(Pet pet: pets.values() ){
-            System.out.println(pet.getName());
-        }
     }
 
     private static void RegisterPet() {
@@ -73,13 +98,11 @@ public class PetCare_Sheduler {
             return;
 
         }
-        if(pets.containsKey(petID)){
+        if (pets.containsKey(petID)) {
             System.out.println("PetId is already exists");
             return;
         }
         petID = petID.trim();
-        
-        
 
         System.out.println("Enter the Name: ");
         String Name = sc.nextLine();
@@ -156,19 +179,20 @@ public class PetCare_Sheduler {
             return;
         }
         appointment = appointment.trim();
-       
-        LocalDate date_time =  DateValidate(sc, "Enter the appoinment Date and time (dd/MM/yyyy hh:mm a) ");
-        if(date_time == null){
+
+        LocalDate date_time = DateValidate(sc, "Enter the appoinment Date and time (dd/MM/yyyy hh:mm a) ");
+        if (date_time == null) {
             return;
         }
 
         System.out.println("Enter Note");
         String note = sc.nextLine();
         Pet pet = pets.get(petid);
-        pet.getAppoinments().add(new Appoinment(appointment, note,date_time));
+        pet.getAppoinments().add(new Appoinment(appointment, note, date_time));
         System.out.println("Sucessfully added appoinment to " + pet.getOwnername());
 
     }
+
     private static void PetsToFile() {
         try {
             // Create a FileOutputStream to write to the file named "pet.ser"
@@ -186,21 +210,21 @@ public class PetCare_Sheduler {
             System.out.println("Error saving data: " + e.getMessage());
         }
     }
+
     private static LocalDate DateValidate(Scanner input, String message) {
 
         while (true) {
             System.out.println(message);
             String value = input.nextLine();
-            if(isBlank(value)){
+            if (isBlank(value)) {
                 System.out.println("Invalid input");
                 continue;
-            }
-            else if(value.equals("exit")){
+            } else if (value.equals("exit")) {
                 return null;
-                
+
             }
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
-            
+
             try {
                 LocalDate date = LocalDate.parse(value, formatter);
                 return date;
@@ -209,33 +233,14 @@ public class PetCare_Sheduler {
             }
         }
 
-      
     }
-    
-    
-    
-    
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    private static void LoadData(){
-        
+    private static void LoadData() {
+
         try (
                 // Open an ObjectInputStream to read from the file pet.ser"
-            
-                ObjectInputStream in = new ObjectInputStream(new FileInputStream("pet.ser"))
-        ) 
-        {
+
+                ObjectInputStream in = new ObjectInputStream(new FileInputStream("pet.ser"))) {
             // Read the object from the file and cast it back to the correct type
             pets = (Map<String, Pet>) in.readObject();
 
@@ -249,8 +254,190 @@ public class PetCare_Sheduler {
             // Handle other errors, like if the file is corrupted or unreadable
             System.out.println("Error loading data: " + e.getMessage());
         }
-        
-        
+
+    }
+
+    private static void DisplayPets() {
+        for (Pet pets : pets.values()) {
+            System.out.println(pets);
+            for (Appoinment ap : pets.getAppoinments()) {
+
+                System.out.println("Appoinment id: " + ap.getshortUUID() + "\n" + "Appoinment type: " + ap.getAppointment_type() + "\n"
+                        + "Date_Time: " + ap.getDate_Time() + "\n"
+                        + "Note: " + ap.getNotes() + "\n"
+                        + "status: " + ap.SetEvent_Status() + "\n"
+                );
+
+            }
+            System.out.println("*****************");
+
+        }
+    }
+
+    private static void Upcomingappoinments() {
+
+        for (Pet pets : pets.values()) {
+            boolean flag = true;
+            for (Appoinment ap : pets.getAppoinments()) {
+
+                if (ap.SetEvent_Status() == ap.status.UPCOMING) {
+
+                    if (flag == true) {
+                        System.out.println(pets);
+                        flag = false;
+
+                    }
+
+                    System.out.println("Appoinment id: " + ap.getshortUUID() + "\n" + "Appoinment type: " + ap.getAppointment_type() + "\n"
+                            + "Date_Time: " + ap.getDate_Time() + "\n"
+                            + "Note: " + ap.getNotes() + "\n"
+                            + "status: " + ap.SetEvent_Status() + "\n"
+                    );
+
+                }
+
+            }
+            System.out.println("*****************");
+
+        }
+
+    }
+
+    private static void todayappoinments() {
+
+        System.out.println("Overdue events....");
+
+        for (Pet pets : pets.values()) {
+            boolean flag = true;
+            for (Appoinment ap : pets.getAppoinments()) {
+
+                if (ap.SetEvent_Status() == ap.status.DUE_TODAY) {
+
+                    if (flag == true) {
+                        System.out.println(pets);
+                        flag = false;
+
+                    }
+
+                    System.out.println("Appoinment id: " + ap.getshortUUID() + "\n" + "Appoinment type: " + ap.getAppointment_type() + "\n"
+                            + "Date_Time: " + ap.getDate_Time() + "\n"
+                            + "Note: " + ap.getNotes() + "\n"
+                            + "status: " + ap.SetEvent_Status() + "\n"
+                    );
+
+                }
+
+            }
+            System.out.println("*****************");
+
+        }
+
+    }
+
+    private static void pastappoinments() {
+
+        System.out.println("Overdue events....");
+
+        for (Pet pets : pets.values()) {
+            boolean flag = true;
+            for (Appoinment ap : pets.getAppoinments()) {
+
+                if (ap.SetEvent_Status() == ap.status.OVERDUE) {
+
+                    if (flag == true) {
+                        System.out.println(pets);
+                        flag = false;
+
+                    }
+
+                    System.out.println("Appoinment id: " + ap.getshortUUID() + "\n" + "Appoinment type: " + ap.getAppointment_type() + "\n"
+                            + "Date_Time: " + ap.getDate_Time() + "\n"
+                            + "Note: " + ap.getNotes() + "\n"
+                            + "status: " + ap.SetEvent_Status() + "\n"
+                    );
+
+                }
+
+            }
+            System.out.println("*****************");
+
+        }
+
+    }
+
+    private static void ChangeAppoinment_Status() {
+
+        System.out.println("Enter the PID: ");
+        String pid = sc.nextLine();
+        if (isBlank(pid)) {
+            System.out.println("Invalid input");
+            return;
+
+        }
+        Pet pet1 = pets.get(pid);
+        if (pet1 == null) {
+            System.out.println("Invalid PID");
+            return;
+        }
+        System.out.println(pet1);
+        for (Appoinment ap : pet1.getAppoinments()) {
+
+            System.out.println("Appoinment id: " + ap.getshortUUID() + "\n" + "Appoinment type: " + ap.getAppointment_type() + "\n"
+                    + "Date_Time: " + ap.getDate_Time() + "\n"
+                    + "Note: " + ap.getNotes() + "\n"
+                    + "status: " + ap.SetEvent_Status() + "\n\n");
+        }
+
+        System.out.println("Enter the appoinment ID: ");
+        String apid = sc.nextLine();
+        if (isBlank(apid)) {
+            System.out.println("Invalid input");
+            return;
+
+        }
+        for (Appoinment ap : pet1.getAppoinments()) {
+
+            if (ap.getUUID().startsWith(apid)) {
+
+                ap.MarkDone();
+                System.out.println("Stauts Updated to Done");
+                return;
+
+            }
+
+        }
+        System.out.println("Invaliid appoinment ID");
+
+    }
+
+    private static void searchpet() {
+        System.out.println("Enter petName: ");
+        String name = sc.nextLine();
+        boolean flag = false;
+        if (isBlank(name)) {
+            System.out.println("Invalid input");
+            return;
+        }
+        for (Pet pet : pets.values()) {
+
+            if (pet.getName().equalsIgnoreCase(name)) {
+                flag = true;
+                System.out.println(pet);
+                for (Appoinment ap : pet.getAppoinments()) {
+                    System.out.println("Appoinment id: " + ap.getshortUUID() + "\n" + "Appoinment type: " + ap.getAppointment_type() + "\n"
+                            + "Date_Time: " + ap.getDate_Time() + "\n"
+                            + "Note: " + ap.getNotes() + "\n"
+                            + "status: " + ap.SetEvent_Status() + "\n\n");
+
+                }
+                System.out.println("*****************");
+                return;
+            }
+
+        }
+        if (flag == false) {
+            System.out.println("Invalid petName try again....");
+        }
     }
 
     //validation userInputs 

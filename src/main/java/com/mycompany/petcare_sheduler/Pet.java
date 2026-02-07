@@ -14,6 +14,8 @@ import java.util.List;
  * @author danuja
  */
 public class Pet implements Serializable{
+    private static final long serialVersionUID = 1L;
+
     
     private String pid;
     private String Name;
@@ -32,6 +34,7 @@ public class Pet implements Serializable{
         this.ownername = ownername;
         this.appoinments = new ArrayList<>();
         this.registerdDate = LocalDate.now();
+        this.pid = pid;
     }
 
     public String getPid() {
@@ -96,6 +99,17 @@ public class Pet implements Serializable{
 
     public void setAppoinments(List<Appoinment> appoinments) {
         this.appoinments = appoinments;
+    }
+    
+    public String toString(){
+        return "PetID: " + pid + "\n"
+                + "PetName " + Name + "\n" +
+                "Breed " + Breed + "\n" +
+                "age " + age + "\n" +
+                "ownerName " + ownername + "\n"
+                +"contact info: " + contactinfo +"\n" +
+                "registerd Date: " + registerdDate + "\n";
+        
     }
     
     
