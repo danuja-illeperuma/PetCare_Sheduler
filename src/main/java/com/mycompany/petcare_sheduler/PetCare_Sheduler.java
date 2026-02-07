@@ -157,7 +157,7 @@ public class PetCare_Sheduler {
         }
         appointment = appointment.trim();
        
-        LocalDate date_time =  DateValidate(sc, "Enter the appoinment Date and time (dd/MM/yyyy HH:mm) ");
+        LocalDate date_time =  DateValidate(sc, "Enter the appoinment Date and time (dd/MM/yyyy hh:mm a) ");
         if(date_time == null){
             return;
         }
@@ -199,7 +199,7 @@ public class PetCare_Sheduler {
                 return null;
                 
             }
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
             
             try {
                 LocalDate date = LocalDate.parse(value, formatter);
